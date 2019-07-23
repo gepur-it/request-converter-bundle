@@ -10,6 +10,6 @@ namespace GepurIt\RequestConverterBundle\Exception;
  * Class InvalidValidatorException
  * @package GepurIt\RequestConverterBundle\Exception
  */
-class RequestDTONotFoundException extends \RuntimeException
+class RequestModelNotFoundException extends \RuntimeException
 {
 }

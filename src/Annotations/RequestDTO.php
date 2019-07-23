@@ -24,5 +24,5 @@ class RequestDTO
     public $validate = true;
 
     /** @var string */
-    public $name = 'requestDTO';
+    public $name = 'requestModel';
 }

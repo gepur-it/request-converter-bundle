@@ -8,7 +8,7 @@ namespace GepurIt\RequestConverterBundle\EventListener;
 
 use Doctrine\Common\Annotations\Reader;
 use GepurIt\RequestConverterBundle\Annotations\RequestDTO;
-use GepurIt\RequestConverterBundle\Exception\RequestDTONotFoundException;
+use GepurIt\RequestConverterBundle\Exception\RequestModelNotFoundException;
 use GepurIt\RequestConverterBundle\Exception\RequestValidationException;
 use GepurIt\RequestConverterBundle\RequestConverter\RequestConverter;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
@@ -77,10 +77,10 @@ class RequestListener
             $requestDTO = new $dtoName(...$methodAnnotation->arguments);
         }
         if (null === $requestDTO) {
-            throw new RequestDTONotFoundException("requestDTO {$dtoName} not found");
+            throw new RequestModelNotFoundException("requestDTO {$dtoName} not found");
         }
 
-        $this->requestConverter->buildRequestDTO($request, $requestDTO);
+        $this->requestConverter->buildRequestModel($request, $requestDTO);
         if ($methodAnnotation->validate) {
             $violations = $this->validator->validate($requestDTO);
             if ($violations->count() > 0) {

@@ -6,6 +6,7 @@
 
 namespace GepurIt\RequestConverterBundle\RequestConverter;
 
+use GepurIt\RequestConverterBundle\Contract\RequestModelServiceInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
@@ -15,7 +16,7 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
  */
 class RequestConverter
 {
-    /** @var object[] */
+    /** @var RequestModelServiceInterface[] */
     private $dtoServices = [];
 
     /** @var PropertyAccessorInterface */
@@ -31,10 +32,10 @@ class RequestConverter
     }
 
     /**
-     * @param string  $name
-     * @param object  $requestDTO
+     * @param string                       $name
+     * @param RequestModelServiceInterface $requestDTO
      */
-    public function addDTOService(string $name, object $requestDTO)
+    public function addDTOService(string $name, RequestModelServiceInterface $requestDTO)
     {
         $this->dtoServices[$name] = $requestDTO;
     }
@@ -45,14 +46,16 @@ class RequestConverter
      *
      * @return object
      */
-    public function buildRequestDTO(Request $request, object $requestDTO)
+    public function buildRequestModel(Request $request, object $requestDTO)
     {
         foreach ($request->request->all() as $name => $value) {
             if ($this->propertyAccessor->isWritable($requestDTO, $name)) {
                 $this->propertyAccessor->setValue($requestDTO, $name, $value);
             }
         }
-
+        if ($requestDTO instanceof RequestModelServiceInterface) {
+            $requestDTO->handle();
+        }
         return $requestDTO;
     }
 
@@ -67,11 +70,11 @@ class RequestConverter
     }
 
     /**
-     * @param $validatorName
+     * @param $dtoServiceName
      *
-     * @return object
+     * @return RequestModelServiceInterface
      */
-    public function get($dtoServiceName)
+    public function get(string $dtoServiceName): RequestModelServiceInterface
     {
         return $this->dtoServices[$dtoServiceName];
     }

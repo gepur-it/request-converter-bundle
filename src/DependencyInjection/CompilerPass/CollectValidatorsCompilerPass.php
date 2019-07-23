@@ -16,7 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  */
 class CollectValidatorsCompilerPass implements CompilerPassInterface
 {
-    const REGISTRY_ITEM_TAG = 'request.validator';
+    const REGISTRY_ITEM_TAG = 'request_model_service';
 
     /**
      * You can modify the container here before it is dumped to PHP code.
