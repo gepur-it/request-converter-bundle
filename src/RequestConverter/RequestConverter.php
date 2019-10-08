@@ -53,6 +53,16 @@ class RequestConverter
                 $this->propertyAccessor->setValue($requestDTO, $name, $value);
             }
         }
+        foreach ($request->attributes->all() as $name => $value) {
+            if ($this->propertyAccessor->isWritable($requestDTO, $name)) {
+                $this->propertyAccessor->setValue($requestDTO, $name, $value);
+            }
+        }
+        foreach ($request->query->all() as $name => $value) {
+            if ($this->propertyAccessor->isWritable($requestDTO, $name)) {
+                $this->propertyAccessor->setValue($requestDTO, $name, $value);
+            }
+        }
         if ($requestDTO instanceof RequestModelServiceInterface) {
             $requestDTO->handle();
         }
