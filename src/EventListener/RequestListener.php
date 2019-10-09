@@ -32,15 +32,16 @@ class RequestListener
     /**
      * RequestListener constructor.
      *
-     * @param RequestConverter   $requestConverter
-     * @param Reader             $annotationReader
+     * @param RequestConverter $requestConverter
+     * @param Reader $annotationReader
      * @param ValidatorInterface $validator
      */
     public function __construct(
         RequestConverter $requestConverter,
         Reader $annotationReader,
         ValidatorInterface $validator
-    ) {
+    )
+    {
         $this->requestConverter = $requestConverter;
         $this->annotationReader = $annotationReader;
         $this->validator = $validator;
@@ -62,32 +63,40 @@ class RequestListener
 
         $controllerReflection = new \ReflectionObject($controllerObject);
         $reflectionMethod = $controllerReflection->getMethod($methodName);
-        /** @var RequestDTO|null $methodAnnotation */
-        $methodAnnotation = $this->annotationReader->getMethodAnnotation($reflectionMethod, RequestDTO::class);
-        if (null === $methodAnnotation || empty($dtoName = $methodAnnotation->model)) {
+        $methodAnnotations = $this->annotationReader->getMethodAnnotations($reflectionMethod);
+        $methodAnnotations = array_filter($methodAnnotations, function ($annotation) {
+            return $annotation instanceof RequestDTO;
+        });
+        /** @var RequestDTO[] $methodAnnotations */
+        if (empty($methodAnnotations)) {
             return;
         }
 
-        $request    = $event->getRequest();
+        $request = $event->getRequest();
 
         $requestDTO = null;
-        if ($this->requestConverter->exists($dtoName)) {
-            $requestDTO = $this->requestConverter->get($dtoName);
-        } elseif (class_exists($dtoName)) {
-            $requestDTO = new $dtoName(...$methodAnnotation->arguments);
-        }
-        if (null === $requestDTO) {
-            throw new RequestModelNotFoundException("requestDTO {$dtoName} not found");
-        }
-
-        $this->requestConverter->buildRequestModel($request, $requestDTO);
-        if ($methodAnnotation->validate) {
-            $violations = $this->validator->validate($requestDTO);
-            if ($violations->count() > 0) {
-                throw new RequestValidationException($violations);
+        foreach ($methodAnnotations as $methodAnnotation) {
+            if (empty($dtoName = $methodAnnotation->model)) {
+                continue;
             }
-        }
+            if ($this->requestConverter->exists($dtoName)) {
+                $requestDTO = $this->requestConverter->get($dtoName);
+            } elseif (class_exists($dtoName)) {
+                $requestDTO = new $dtoName(...$methodAnnotation->arguments);
+            }
+            if (null === $requestDTO) {
+                throw new RequestModelNotFoundException("requestDTO {$dtoName} not found");
+            }
 
-        $request->attributes->set($methodAnnotation->name, $requestDTO);
+            $this->requestConverter->buildRequestModel($request, $requestDTO);
+            if ($methodAnnotation->validate) {
+                $violations = $this->validator->validate($requestDTO);
+                if ($violations->count() > 0) {
+                    throw new RequestValidationException($violations);
+                }
+            }
+
+            $request->attributes->set($methodAnnotation->name, $requestDTO);
+        }
     }
 }
