@@ -3,7 +3,7 @@
   "description": "Request converter for symfony",
   "type": "symfony-bundle",
   "license": "MIT",
-  "version":"4.3.3",
+  "version":"5.0.0",
   "authors": [
     {
       "name": "Andrii Yakovlev",
@@ -20,18 +20,18 @@
   ],
   "homepage": "https://github.com/gepur-it/request-converter-bundle",
   "require": {
-    "php": "^7.3",
+    "php": ">=7.3",
     "ext-json": "*",
-    "symfony/http-kernel": "^4.3",
-    "symfony/console": "^4.3",
-    "doctrine/annotations": "^1.6",
-    "symfony/validator": "^4.3",
-    "symfony/property-access": "^4.3",
-    "symfony/dependency-injection": "^4.3",
-    "symfony/config": "^4.3"
+    "symfony/http-kernel": "^>=4.3",
+    "symfony/console": ">=4.3",
+    "doctrine/annotations": ">=1.6",
+    "symfony/validator": ">=4.3",
+    "symfony/property-access": "^>=.3",
+    "symfony/dependency-injection": ">=4.3",
+    "symfony/config": ">=4.3"
   },
   "require-dev": {
-    "phpunit/phpunit": "^7.2"
+    "phpunit/phpunit": ">=7.2"
   },
   "conflict": {
     "gepur-it/request-validator-bundle":"*"
