@@ -20,7 +20,6 @@ class ValidationExceptionListener
 
     /**
      * ValidationExceptionListener constructor.
-     *
      */
     public function __construct()
     {
@@ -28,10 +27,11 @@ class ValidationExceptionListener
 
     /**
      * @param ExceptionEvent $event
+     * @throws \ReflectionException
      */
     public function onKernelException(ExceptionEvent $event)
     {
-        $exception = $event->getException();
+        $exception = $event->getThrowable();
         if (!($exception instanceof RequestValidationException)) {
             return;
         }
